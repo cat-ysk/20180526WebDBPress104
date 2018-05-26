@@ -18,6 +18,14 @@ public class Fighter : MonoBehaviour {
             Vector3 pos = Input.mousePosition;
             transform.position = GetScreen2WorldPosition(pos); ;
         }
+        if (Input.GetMouseButtonDown(1))
+        {
+            string path = "bullet";
+            GameObject pr = Resources.Load<GameObject>(path);
+            Vector3 pos = transform.position;
+            Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
+            Object.Instantiate(pr, pos, rot);
+        }
 #else
         if (Input.touchCount > 0)
         {
