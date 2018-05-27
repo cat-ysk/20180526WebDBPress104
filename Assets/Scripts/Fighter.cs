@@ -16,15 +16,11 @@ public class Fighter : MonoBehaviour {
         if (Input.GetMouseButton(0))
         {
             Vector3 pos = Input.mousePosition;
-            transform.position = GetScreen2WorldPosition(pos); ;
+            transform.position = GetScreen2WorldPosition(pos);
         }
         if (Input.GetMouseButtonDown(1))
         {
-            string path = "bullet";
-            GameObject pr = Resources.Load<GameObject>(path);
-            Vector3 pos = transform.position;
-            Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
-            Object.Instantiate(pr, pos, rot);
+            ThreeWayShot();
         }
 #else
         if (Input.touchCount > 0)
@@ -34,6 +30,30 @@ public class Fighter : MonoBehaviour {
             transform.position = GetScreen2WorldPosition(pos);
         }
 #endif
+    }
+
+    void NormalShot()
+    {
+        GameObject pr = Resources.Load<GameObject>("bullet");
+        Vector3 pos = transform.position;
+        Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
+        Object.Instantiate(pr, pos, rot);
+    }
+
+    void ThreeWayShot()
+    {
+        var pr = Resources.Load<GameObject>("bullet");
+        var pos = transform.position;
+        for (int i = 0; i < 3; ++i)
+        {
+            var rot = Quaternion.identity;
+            var obj = Object.Instantiate(pr, pos, rot);
+            float angle = -10f + (10f * i);
+            rot = Quaternion.Euler(90f, angle, 0f);
+
+            var bl = obj.GetComponent<Bullet>();
+            bl.Shoot(rot, 20f);
+        }
     }
 
     Vector3 GetScreen2WorldPosition(Vector3 position)

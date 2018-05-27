@@ -6,6 +6,9 @@ public class Bullet : MonoBehaviour {
 
     private bool isRender = false;
 
+    private Vector3 direct = Vector3.forward;
+    private float speed = 20f;
+
 	// Use this for initialization
 	void Start () {
 
@@ -19,7 +22,8 @@ public class Bullet : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        Vector3 move = new Vector3(0f, 0f, 1f);
+        float time = Time.deltaTime;
+        var move = direct * (speed * time);
         transform.Translate(move, Space.World);
 
         if (!isRender)
@@ -29,4 +33,10 @@ public class Bullet : MonoBehaviour {
         isRender = false;
 	}
 
+    public void Shoot(Quaternion rot, float spd)
+    {
+        direct = rot * Vector3.up;
+        speed = spd;
+        transform.rotation = rot;
+    }
 }
