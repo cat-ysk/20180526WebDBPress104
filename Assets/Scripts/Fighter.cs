@@ -3,59 +3,105 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Fighter : MonoBehaviour {
+    // 弾オブジェクトを保存できる最大数
+    int BULLET_MAX = 100;
+
+    // 弾オブジェクトをキャッシュしておくリスト（待機リスト、稼働リスト）
+    LinkedList<Bullet> reserveList, activeList;
 
 	// Use this for initialization
 	void Start () {
-		
+        InitBulletList();
 	}
 	
-	// Update is called once per frame
 	void Update () {
-        float elapsedTime = Time.deltaTime;
 #if UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetMouseButton(0))
         {
-            Vector3 pos = Input.mousePosition;
-            transform.position = GetScreen2WorldPosition(pos);
+            MoveByMouse();
         }
         if (Input.GetMouseButtonDown(1))
         {
-            ThreeWayShot();
+            Shoot();
         }
 #else
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
-            Vector3 pos = touch.position;
-            transform.position = GetScreen2WorldPosition(pos);
+            MoveByTouch();
         }
 #endif
+        MoveBullets();
     }
 
-    void NormalShot()
+    // 弾丸オブジェクトのリストを初期化する
+    void InitBulletList()
     {
+        reserveList = new LinkedList<Bullet>();
+        activeList = new LinkedList<Bullet>();
         GameObject pr = Resources.Load<GameObject>("bullet");
-        Vector3 pos = transform.position;
-        Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
-        Object.Instantiate(pr, pos, rot);
+        for (var i = 0; i < BULLET_MAX; ++i)
+        {
+            GameObject obj = Object.Instantiate(pr);
+            obj.SetActive(false);
+            var bl = obj.GetComponent<Bullet>();
+            reserveList.AddLast(bl);
+        }
+    }
+    
+    // 自機の移動を行う
+    void MoveByMouse()
+    {
+        Vector3 pos = Input.mousePosition;
+        transform.position = GetScreen2WorldPosition(pos);
+    }
+    // 自機の移動を行う
+    void MoveByTouch()
+    {
+        Touch touch = Input.GetTouch(0);
+        Vector3 pos = touch.position;
+        transform.position = GetScreen2WorldPosition(pos);
     }
 
-    void ThreeWayShot()
+    // 弾を撃つ
+    void Shoot()
     {
-        var pr = Resources.Load<GameObject>("bullet");
         var pos = transform.position;
         for (int i = 0; i < 3; ++i)
         {
-            var rot = Quaternion.identity;
-            var obj = Object.Instantiate(pr, pos, rot);
+            // 弾が待機リストにない場合は撃たない
+            if (this.reserveList.Count == 0) break;
+            // 待機リストから稼働リストへ弾を移動
+            var bl = reserveList.First.Value;
+            activeList.AddLast(bl);
+            reserveList.RemoveFirst();
+            // どっぴゅんセレナーデ
             float angle = -10f + (10f * i);
-            rot = Quaternion.Euler(90f, angle, 0f);
-
-            var bl = obj.GetComponent<Bullet>();
-            bl.Shoot(rot, 20f);
+            var rot = Quaternion.Euler(90f, angle, 0f);
+            bl.Shoot(pos, rot, 20f);
         }
     }
 
+    void MoveBullets()
+    {
+        float elapsedTime = Time.deltaTime;
+        LinkedListNode<Bullet> node = activeList.First;
+        LinkedListNode<Bullet> prevNode = null;
+        while (node != null)
+        {
+            var bl = node.Value;
+            var active = bl.Run(elapsedTime);
+            prevNode = node;
+            node = node.Next;
+            if (!active)
+            {
+                reserveList.AddLast(bl);
+                activeList.Remove(prevNode);
+                bl.Vanish();
+            }
+        }
+    }
+
+    // スクリーンにタッチされた座標をワールド座標へ変換する
     Vector3 GetScreen2WorldPosition(Vector3 position)
     {
         Camera cam = Camera.main;

@@ -22,21 +22,32 @@ public class Bullet : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        float time = Time.deltaTime;
-        var move = direct * (speed * time);
-        transform.Translate(move, Space.World);
-
-        if (!isRender)
-        {
-            Object.Destroy(gameObject);
-        }
-        isRender = false;
 	}
 
-    public void Shoot(Quaternion rot, float spd)
+    // 弾を表示させる
+    public void Shoot(Vector3 pos, Quaternion rot, float spd)
     {
         direct = rot * Vector3.up;
         speed = spd;
-        transform.rotation = rot;
+        transform.SetPositionAndRotation(pos, rot);
+        isRender = true;
+        gameObject.SetActive(true);
+    }
+
+    // 弾を動かす
+    public bool Run(float elapsedTime)
+    {
+        var move = direct * (speed * elapsedTime);
+        transform.Translate(move, Space.World);
+        var ret = isRender;
+        isRender = false;
+        return ret;
+    }
+
+    // 弾を非表示にする
+    public void Vanish()
+    {
+        isRender = false;
+        gameObject.SetActive(false);
     }
 }
