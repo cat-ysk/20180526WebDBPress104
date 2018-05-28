@@ -9,6 +9,12 @@ public class Fighter : MonoBehaviour {
     // 弾オブジェクトをキャッシュしておくリスト（待機リスト、稼働リスト）
     LinkedList<Bullet> reserveList, activeList;
 
+    // 射撃間隔
+    float shotSpan = 3f / 60f;
+
+    // 射撃待ち時間
+    float shotWaitTime = 0f;
+
 	// Use this for initialization
 	void Start () {
         InitBulletList();
@@ -20,9 +26,21 @@ public class Fighter : MonoBehaviour {
         {
             MoveByMouse();
         }
+        float elapsedTime = Time.deltaTime;
+        // 右クリックを押したときの処理
         if (Input.GetMouseButtonDown(1))
         {
-            Shoot();
+            shotWaitTime = elapsedTime;
+        }
+        // 右クリックを押しているときの処理
+        if (Input.GetMouseButton(1))
+        {
+            shotWaitTime -= elapsedTime;
+            if (shotWaitTime < 0f)
+            {
+                Shoot();
+                shotWaitTime += shotSpan;
+            }
         }
 #else
         if (Input.touchCount > 0)
