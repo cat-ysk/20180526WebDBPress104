@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Mob : MonoBehaviour {
 
+    public GameObject explosion = null;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -16,6 +18,8 @@ public class Mob : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
+        Object.Instantiate(explosion, transform.position, Quaternion.identity);
+        Object.Destroy(gameObject);
         gameObject.SetActive(false);
     }
 }
