@@ -8,10 +8,11 @@ public class Bullet : MonoBehaviour {
 
     private Vector3 direct = Vector3.forward;
     private float speed = 20f;
+    private SpriteRenderer renderer;
 
 	// Use this for initialization
 	void Start () {
-
+        renderer = GetComponent<SpriteRenderer>();
     }
 
     void OnWillRenderObject()
@@ -35,10 +36,13 @@ public class Bullet : MonoBehaviour {
     }
 
     // 弾を動かす
-    public bool Run(float elapsedTime)
+    public bool Run(int index, float elapsedTime)
     {
         var move = direct * (speed * elapsedTime);
         transform.Translate(move, Space.World);
+
+        renderer.sortingOrder = index;
+
         var ret = isRender;
         isRender = false;
         return ret;

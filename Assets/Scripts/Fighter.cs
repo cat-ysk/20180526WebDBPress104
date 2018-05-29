@@ -104,10 +104,11 @@ public class Fighter : MonoBehaviour {
         float elapsedTime = Time.deltaTime;
         LinkedListNode<Bullet> node = activeList.First;
         LinkedListNode<Bullet> prevNode = null;
+        var index = 0;
         while (node != null)
         {
             var bl = node.Value;
-            var active = bl.Run(elapsedTime);
+            var active = bl.Run(index, elapsedTime);
             prevNode = node;
             node = node.Next;
             if (!active)
@@ -116,6 +117,7 @@ public class Fighter : MonoBehaviour {
                 activeList.Remove(prevNode);
                 bl.Vanish();
             }
+            ++index;
         }
     }
 
