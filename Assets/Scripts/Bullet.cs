@@ -54,4 +54,10 @@ public class Bullet : MonoBehaviour {
         isRender = false;
         gameObject.SetActive(false);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        isRender = false;
+        gameObject.SetActive(false);
+    }
 }

@@ -15,10 +15,10 @@ TagManager:
   - 
   - PostProcessing
   - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - PlayerBullet
+  - Enemy
+  - EnemyBullet
   - 
   - 
   - 

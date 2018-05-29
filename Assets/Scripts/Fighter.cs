@@ -129,4 +129,9 @@ public class Fighter : MonoBehaviour {
         position.z = camTrans.position.y;
         return cam.ScreenToWorldPoint(position);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        gameObject.SetActive(false);
+    }
 }
