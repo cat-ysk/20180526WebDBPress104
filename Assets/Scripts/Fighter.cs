@@ -17,8 +17,9 @@ public class Fighter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        InitBulletList();
-	}
+        reserveList = BulletList.GetBulletList(BULLET_MAX, "bullet");
+        activeList = new LinkedList<Bullet>();
+    }
 	
 	void Update () {
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -51,20 +52,6 @@ public class Fighter : MonoBehaviour {
         MoveBullets();
     }
 
-    // 弾丸オブジェクトのリストを初期化する
-    void InitBulletList()
-    {
-        reserveList = new LinkedList<Bullet>();
-        activeList = new LinkedList<Bullet>();
-        GameObject pr = Resources.Load<GameObject>("bullet");
-        for (var i = 0; i < BULLET_MAX; ++i)
-        {
-            GameObject obj = Object.Instantiate(pr);
-            obj.SetActive(false);
-            var bl = obj.GetComponent<Bullet>();
-            reserveList.AddLast(bl);
-        }
-    }
     
     // 自機の移動を行う
     void MoveByMouse()
